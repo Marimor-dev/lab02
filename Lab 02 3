@@ -1,0 +1,129 @@
+import java.util.Arrays;
+import java.util.Random;
+
+public class OrdenamientoComparativa {
+    
+    public static void main(String[] args) {
+        int[] tamaños = {100, 500, 1000, 5000, 10000};
+        System.out.printf("%-10s%-15s%-15s%-15s%-15s%n", "Tamaño", "Burbuja", "Inserción", "Selección", "MergeSort");
+        
+        for (int tamaño : tamaños) {
+            double[] arreglo = generarArregloAleatorio(tamaño);
+            
+            double[] arregloBurbuja = Arrays.copyOf(arreglo, arreglo.length);
+            double[] arregloInsercion = Arrays.copyOf(arreglo, arreglo.length);
+            double[] arregloSeleccion = Arrays.copyOf(arreglo, arreglo.length);
+            double[] arregloMergeSort = Arrays.copyOf(arreglo, arreglo.length);
+            
+            long inicio, fin;
+            
+            inicio = System.nanoTime();
+            burbuja(arregloBurbuja);
+            fin = System.nanoTime();
+            long tiempoBurbuja = fin - inicio;
+            
+            inicio = System.nanoTime();
+            insercion(arregloInsercion);
+            fin = System.nanoTime();
+            long tiempoInsercion = fin - inicio;
+            
+            inicio = System.nanoTime();
+            seleccion(arregloSeleccion);
+            fin = System.nanoTime();
+            long tiempoSeleccion = fin - inicio;
+            
+            inicio = System.nanoTime();
+            mergeSort(arregloMergeSort);
+            fin = System.nanoTime();
+            long tiempoMergeSort = fin - inicio;
+            
+            System.out.printf("%-10d%-15d%-15d%-15d%-15d%n", tamaño, tiempoBurbuja, tiempoInsercion, tiempoSeleccion, tiempoMergeSort);
+        }
+    }
+    
+    public static double[] generarArregloAleatorio(int tamaño) {
+        Random rand = new Random();
+        double[] arreglo = new double[tamaño];
+        for (int i = 0; i < tamaño; i++) {
+            arreglo[i] = rand.nextDouble() * 1000; 
+        }
+        return arreglo;
+    }
+    
+    public static void burbuja(double[] arreglo) {
+        int n = arreglo.length;
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = 0; j < n - i - 1; j++) {
+                if (arreglo[j] > arreglo[j + 1]) {
+                    double temp = arreglo[j];
+                    arreglo[j] = arreglo[j + 1];
+                    arreglo[j + 1] = temp;
+                }
+            }
+        }
+    }
+    
+    public static void insercion(double[] arreglo) {
+        int n = arreglo.length;
+        for (int i = 1; i < n; i++) {
+            double clave = arreglo[i];
+            int j = i - 1;
+            while (j >= 0 && arreglo[j] > clave) {
+                arreglo[j + 1] = arreglo[j];
+                j--;
+            }
+            arreglo[j + 1] = clave;
+        }
+    }
+    
+    public static void seleccion(double[] arreglo) {
+        int n = arreglo.length;
+        for (int i = 0; i < n - 1; i++) {
+            int índiceMin = i;
+            for (int j = i + 1; j < n; j++) {
+                if (arreglo[j] < arreglo[índiceMin]) {
+                    índiceMin = j;
+                }
+            }
+            if (índiceMin != i) {
+                double temp = arreglo[i];
+                arreglo[i] = arreglo[índiceMin];
+                arreglo[índiceMin] = temp;
+            }
+        }
+    }
+    
+    public static void mergeSort(double[] arreglo) {
+        if (arreglo.length < 2) {
+            return;
+        }
+        int medio = arreglo.length / 2;
+        double[] izquierda = Arrays.copyOfRange(arreglo, 0, medio);
+        double[] derecha = Arrays.copyOfRange(arreglo, medio, arreglo.length);
+        
+        mergeSort(izquierda);
+        mergeSort(derecha);
+        
+        merge(arreglo, izquierda, derecha);
+    }
+    
+    public static void merge(double[] arreglo, double[] izquierda, double[] derecha) {
+        int i = 0, j = 0, k = 0;
+        
+        while (i < izquierda.length && j < derecha.length) {
+            if (izquierda[i] <= derecha[j]) {
+                arreglo[k++] = izquierda[i++];
+            } else {
+                arreglo[k++] = derecha[j++];
+            }
+        }
+        
+        while (i < izquierda.length) {
+            arreglo[k++] = izquierda[i++];
+        }
+        
+        while (j < derecha.length) {
+            arreglo[k++] = derecha[j++];
+        }
+    }
+}
